@@ -1,6 +1,8 @@
 #![feature(path, io)]
 
 extern crate getopts;
+extern crate libnotify;
+
 use getopts::Options;
 use std::env;
 use std::process::{Command, Stdio};
@@ -149,6 +151,10 @@ fn main() {
         Choice::Upload => {
             let url = upload_to_imgur(&file_path).unwrap();
             copy_to_clipboard(&url).unwrap();
+            let notify = libnotify::Context::new("rscrot").unwrap();
+            let body = format!("Uploaded to {}", url);
+            let msg = notify.new_notification("Success:", &body).unwrap();
+            msg.show().unwrap();
         }
         Choice::SaveAs(path) => save_as(&file_path, &path).unwrap(),
         Choice::OpenInFeh => open_in_feh(&file_path).unwrap()

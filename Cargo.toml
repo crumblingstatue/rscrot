@@ -6,3 +6,6 @@ authors = ["Mika Attila <radiantstatue@gmail.com>"]
 
 [dependencies]
 getopts = "0.2.4"
+
+[dependencies.libnotify]
+git = "https://github.com/crumblingstatue/rust-libnotify.git"
