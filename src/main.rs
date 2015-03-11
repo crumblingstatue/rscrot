@@ -153,7 +153,7 @@ fn main() {
             copy_to_clipboard(&url).unwrap();
             let notify = libnotify::Context::new("rscrot").unwrap();
             let body = format!("Uploaded to {}", url);
-            let msg = notify.new_notification("Success:", &body).unwrap();
+            let msg = notify.new_notification("Success:", Some(&body), None).unwrap();
             msg.show().unwrap();
         }
         Choice::SaveAs(path) => save_as(&file_path, &path).unwrap(),
