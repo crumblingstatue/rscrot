@@ -1,5 +1,3 @@
-#![feature(path, io)]
-
 extern crate getopts;
 extern crate libnotify;
 
