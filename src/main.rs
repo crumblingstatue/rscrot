@@ -1,3 +1,5 @@
+#![feature(convert)]
+
 extern crate getopts;
 extern crate libnotify;
 
@@ -5,6 +7,7 @@ use getopts::Options;
 use std::env;
 use std::process::{Command, Stdio};
 use std::path::{Path, PathBuf};
+use std::convert::From;
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} [options]", program);
@@ -43,7 +46,7 @@ fn get_save_filename_from_zenity() -> Result<PathBuf, String> {
     if !output.status.success() {
         return Err(format!("zenity failed. Exit status: {}", output.status));
     }
-    Ok(PathBuf::new(&String::from_utf8(output.stdout).unwrap()))
+    Ok(PathBuf::from(&String::from_utf8(output.stdout).unwrap()))
 }
 
 fn get_user_choice_from_menu() -> Result<Choice, String> {
