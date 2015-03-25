@@ -7,7 +7,6 @@ use getopts::Options;
 use std::env;
 use std::process::{Command, Stdio};
 use std::path::{Path, PathBuf};
-use std::convert::From;
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} [options]", program);
