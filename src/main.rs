@@ -1,5 +1,3 @@
-#![feature(convert)]
-
 extern crate getopts;
 extern crate libnotify;
 
@@ -89,10 +87,6 @@ fn upload_to_imgur(path: &Path) -> Result<String, String> {
     }
 }
 
-fn save_as(orig_path: &Path, new_path: &Path) -> Result<(), String> {
-    unimplemented!()
-}
-
 fn open_in_feh(path: &Path) -> Result<(), String> {
     unimplemented!()
 }
@@ -156,7 +150,9 @@ fn main() {
             let msg = notify.new_notification("Success:", Some(&body), None).unwrap();
             msg.show().unwrap();
         }
-        Choice::SaveAs(path) => save_as(&file_path, &path).unwrap(),
+        Choice::SaveAs(path) => {
+            std::fs::copy(&file_path, path.to_str().unwrap().trim()).unwrap_or_else(|e| panic!("{}", e));
+        }
         Choice::OpenInFeh => open_in_feh(&file_path).unwrap()
     }
 }
