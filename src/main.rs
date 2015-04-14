@@ -88,7 +88,12 @@ fn upload_to_imgur(path: &Path) -> Result<String, String> {
 }
 
 fn open_in_feh(path: &Path) -> Result<(), String> {
-    unimplemented!()
+    let mut cmd = Command::new("feh");
+    cmd.arg(path);
+    match cmd.spawn() {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e.to_string())
+    }
 }
 
 fn copy_to_clipboard(string: &str) -> Result<(), String> {
