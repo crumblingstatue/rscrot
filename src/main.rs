@@ -149,7 +149,7 @@ fn main() {
     match get_user_choice_from_menu().unwrap() {
         Choice::Upload => {
             let url = upload_to_imgur(&file_path).unwrap();
-            copy_to_clipboard(&url).unwrap();
+            copy_to_clipboard(url.trim_right()).unwrap();
             let notify = libnotify::Context::new("rscrot").unwrap();
             let body = format!("Uploaded to {}", url);
             let msg = notify.new_notification("Success:", Some(&body), None).unwrap();
