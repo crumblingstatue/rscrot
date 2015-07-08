@@ -3,7 +3,8 @@ A screenshot tool that can
 - Capture a user-selected area on the screen
 
 then either
-- Upload that image to imgur
+- Upload that image to imgur. You get a notification if the upload was successful, and 
+  the link to the image will be pasted to your clipboard.
 - Save the data to disk
 - View it in an image viewer (right now feh)
 
