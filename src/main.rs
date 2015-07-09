@@ -150,7 +150,7 @@ fn main() {
             let notify = libnotify::Context::new("rscrot").unwrap();
             match upload_to_imgur(&file_path, client_id.unwrap()).unwrap().link() {
                 Some(url) => {
-                    copy_to_clipboard(url.trim_right()).unwrap();
+                    copy_to_clipboard(url).unwrap();
                     let body = format!("Uploaded to {}", url);
                     let msg = notify.new_notification("Success:", Some(&body), None).unwrap();
                     msg.show().unwrap();
