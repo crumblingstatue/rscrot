@@ -72,7 +72,9 @@ fn get_user_choice_from_menu(imgur: bool) -> Result<Choice, String> {
         b"Upload to imgur.com\n" => Ok(Choice::Upload),
         b"Save as...\n" => Ok(Choice::SaveAs(try!(get_save_filename_from_zenity()))),
         b"Open in feh\n" => Ok(Choice::OpenInFeh),
-        id => Err(format!("Zenity returned unknown result {:?}", String::from_utf8_lossy(id)))
+        other => Err(
+            format!("Zenity returned unknown result {:?}", String::from_utf8_lossy(other))
+        ),
     }
 }
 
