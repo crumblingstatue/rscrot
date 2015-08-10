@@ -150,15 +150,21 @@ fn main() {
     match get_user_choice_from_menu(client_id.is_some()).unwrap() {
         Choice::Upload => {
             let notify = libnotify::Context::new("rscrot").unwrap();
-            match upload_to_imgur(&file_path, client_id.unwrap()).unwrap().link() {
-                Some(url) => {
-                    copy_to_clipboard(url).unwrap();
-                    let body = format!("Uploaded to {}", url);
-                    let msg = notify.new_notification("Success:", Some(&body), None).unwrap();
-                    msg.show().unwrap();
-                }
-                None => {
-                    let msg = notify.new_notification("Wtf, no link?", None, None).unwrap();
+            match upload_to_imgur(&file_path, client_id.unwrap()) {
+                Ok(info) => match info.link() {
+                    Some(url) => {
+                        copy_to_clipboard(url).unwrap();
+                        let body = format!("Uploaded to {}", url);
+                        let msg = notify.new_notification("Success:", Some(&body), None).unwrap();
+                        msg.show().unwrap();
+                    }
+                    None => {
+                        let msg = notify.new_notification("Wtf, no link?", None, None).unwrap();
+                        msg.show().unwrap();
+                    }
+                },
+                Err(e) => {
+                    let msg = notify.new_notification(&format!("Error: {}", e), None, None).unwrap();
                     msg.show().unwrap();
                 }
             }
