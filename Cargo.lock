@@ -4,7 +4,7 @@ version = "0.0.1"
 dependencies = [
  "getopts 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "imgur 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "libnotify 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libnotify 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -99,20 +99,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "libnotify"
-version = "0.0.3"
+version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "glib-2_0-sys 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "libnotify-sys 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gtypes 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libnotify-sys 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "libnotify-sys"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "glib-2_0-sys 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "gobject-2_0-sys 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gtypes 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "pkg-config 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
