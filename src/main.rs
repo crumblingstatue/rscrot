@@ -108,7 +108,7 @@ fn copy_to_clipboard(string: &str) -> Result<(), String> {
     {
         let stdin = match xclip.stdin {
             Some(ref mut stdin) => stdin,
-            None => return Err("Child had no stdin".to_string()),
+            None => return Err("Child had no stdin".into()),
         };
         if let Err(e) = stdin.write_all(string.as_bytes()) {
             return Err(e.to_string())
@@ -117,7 +117,7 @@ fn copy_to_clipboard(string: &str) -> Result<(), String> {
     match xclip.wait() {
         Ok(status) => {
             if !status.success() {
-                return Err(format!("xclip failed. Exit status: {}", status));
+                Err(format!("xclip failed. Exit status: {}", status))
             } else {
                 Ok(())
             }
