@@ -22,7 +22,7 @@ fn save_screenshot(path: &Path, select: bool) -> Result<(), String> {
     scrot.arg(path);
     let status = match scrot.status() {
         Ok(status) => status,
-        Err(e) => return Err(e.to_string())
+        Err(e) => return Err(e.to_string()),
     };
     if !status.success() {
         return Err(format!("scrot failed. Exit status: {}", status));
@@ -33,7 +33,7 @@ fn save_screenshot(path: &Path, select: bool) -> Result<(), String> {
 enum Choice {
     Upload,
     SaveAs(PathBuf),
-    OpenInFeh
+    OpenInFeh,
 }
 
 fn get_save_filename_from_zenity() -> Result<PathBuf, String> {
@@ -41,7 +41,7 @@ fn get_save_filename_from_zenity() -> Result<PathBuf, String> {
     zenity.arg("--file-selection").arg("--save");
     let output = match zenity.output() {
         Ok(output) => output,
-        Err(e) => return Err(e.to_string())
+        Err(e) => return Err(e.to_string()),
     };
     if !output.status.success() {
         return Err(format!("zenity failed. Exit status: {}", output.status));
@@ -51,19 +51,19 @@ fn get_save_filename_from_zenity() -> Result<PathBuf, String> {
 
 fn get_user_choice_from_menu(imgur: bool) -> Result<Choice, String> {
     let mut zenity = Command::new("zenity");
-    zenity
-     .arg("--list")
-     .arg("--title").arg("Choose Action")
-     .arg("--column").arg("Action");
+    zenity.arg("--list")
+          .arg("--title")
+          .arg("Choose Action")
+          .arg("--column")
+          .arg("Action");
     if imgur {
         zenity.arg("Upload to imgur.com");
     }
-     zenity
-     .arg("Save as...")
-     .arg("Open in feh");
+    zenity.arg("Save as...")
+          .arg("Open in feh");
     let output = match zenity.output() {
         Ok(output) => output,
-        Err(e) => return Err(e.to_string())
+        Err(e) => return Err(e.to_string()),
     };
     if !output.status.success() {
         return Err(format!("zenity failed. Exit status: {}", output.status));
@@ -72,9 +72,8 @@ fn get_user_choice_from_menu(imgur: bool) -> Result<Choice, String> {
         b"Upload to imgur.com\n" => Ok(Choice::Upload),
         b"Save as...\n" => Ok(Choice::SaveAs(try!(get_save_filename_from_zenity()))),
         b"Open in feh\n" => Ok(Choice::OpenInFeh),
-        other => Err(
-            format!("Zenity returned unknown result {:?}", String::from_utf8_lossy(other))
-        ),
+        other => Err(format!("Zenity returned unknown result {:?}",
+                             String::from_utf8_lossy(other))),
     }
 }
 
@@ -92,7 +91,7 @@ fn open_in_feh(path: &Path) -> Result<(), String> {
     cmd.arg(path);
     match cmd.spawn() {
         Ok(_) => Ok(()),
-        Err(e) => Err(e.to_string())
+        Err(e) => Err(e.to_string()),
     }
 }
 
@@ -100,16 +99,17 @@ fn copy_to_clipboard(string: &str) -> Result<(), String> {
     use std::io::Write;
 
     let mut xclip = match Command::new("xclip")
-                          .arg("-selection").arg("clipboard")
-                          .stdin(Stdio::piped())
-                          .spawn() {
+                              .arg("-selection")
+                              .arg("clipboard")
+                              .stdin(Stdio::piped())
+                              .spawn() {
         Ok(child) => child,
-        Err(e) => return Err(e.to_string())
+        Err(e) => return Err(e.to_string()),
     };
     {
         let stdin = match xclip.stdin {
             Some(ref mut stdin) => stdin,
-            None => return Err("Child had no stdin".to_string())
+            None => return Err("Child had no stdin".to_string()),
         };
         if let Err(e) = stdin.write_all(string.as_bytes()) {
             return Err(e.to_string())
@@ -122,8 +122,8 @@ fn copy_to_clipboard(string: &str) -> Result<(), String> {
             } else {
                 Ok(())
             }
-        },
-        Err(e) => Err(e.to_string())
+        }
+        Err(e) => Err(e.to_string()),
     }
 }
 
@@ -136,8 +136,12 @@ fn main() {
     opts.optopt("", "imgur", "Allow uploading to imgur. Needs client id.", "CLIENT_ID");
     opts.optflag("h", "help", "print this help menu");
     let matches = match opts.parse(args) {
-        Ok(m) => { m }
-        Err(f) => { panic!(f.to_string()) }
+        Ok(m) => {
+            m
+        }
+        Err(f) => {
+            panic!(f.to_string())
+        }
     };
     if matches.opt_present("h") {
         print_usage(&program, opts);
@@ -164,14 +168,16 @@ fn main() {
                     }
                 },
                 Err(e) => {
-                    let msg = notify.new_notification(&format!("Error: {}", e), None, None).unwrap();
+                    let msg = notify.new_notification(&format!("Error: {}", e), None, None)
+                                    .unwrap();
                     msg.show().unwrap();
                 }
             }
         }
         Choice::SaveAs(path) => {
-            std::fs::copy(&file_path, path.to_str().unwrap().trim()).unwrap_or_else(|e| panic!("{}", e));
+            std::fs::copy(&file_path, path.to_str().unwrap().trim())
+                .unwrap_or_else(|e| panic!("{}", e));
         }
-        Choice::OpenInFeh => open_in_feh(&file_path).unwrap()
+        Choice::OpenInFeh => open_in_feh(&file_path).unwrap(),
     }
 }
