@@ -59,8 +59,7 @@ fn get_user_choice_from_menu(imgur: bool) -> Result<Choice, String> {
     if imgur {
         zenity.arg("Upload to imgur.com");
     }
-    zenity.arg("Save as...")
-          .arg("Open in feh");
+    zenity.arg("Save as...").arg("Open in feh");
     let output = match zenity.output() {
         Ok(output) => output,
         Err(e) => return Err(e.to_string()),
