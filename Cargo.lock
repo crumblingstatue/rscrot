@@ -18,31 +18,31 @@ dependencies = [
 
 [[package]]
 name = "curl"
-version = "0.2.11"
+version = "0.2.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "curl-sys 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
+ "curl-sys 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "openssl-sys 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "openssl-sys 0.6.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "url 0.2.37 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "curl-sys"
-version = "0.1.25"
+version = "0.1.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "gcc 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gcc 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
- "libz-sys 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "openssl-sys 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "pkg-config 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libz-sys 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "openssl-sys 0.6.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pkg-config 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "gcc"
-version = "0.3.14"
+version = "0.3.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "advapi32-sys 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -59,9 +59,9 @@ name = "glib-2_0-sys"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "gtypes 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gtypes 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
- "pkg-config 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pkg-config 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -70,13 +70,13 @@ version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "glib-2_0-sys 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "gtypes 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "pkg-config 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gtypes 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pkg-config 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "gtypes"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -87,7 +87,7 @@ name = "imgur"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "curl 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "curl 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "try_opt 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -103,7 +103,7 @@ version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "glib-2_0-sys 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "gtypes 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gtypes 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "libnotify-sys 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -114,9 +114,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "glib-2_0-sys 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "gobject-2_0-sys 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "gtypes 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gtypes 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
- "pkg-config 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pkg-config 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -129,12 +129,12 @@ dependencies = [
 
 [[package]]
 name = "libz-sys"
-version = "0.1.8"
+version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "gcc 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gcc 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
- "pkg-config 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pkg-config 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -161,18 +161,18 @@ dependencies = [
 
 [[package]]
 name = "openssl-sys"
-version = "0.6.5"
+version = "0.6.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "gcc 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gcc 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "libressl-pnacl-sys 2.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "pkg-config 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pkg-config 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "pkg-config"
-version = "0.3.5"
+version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -200,7 +200,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "serde"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "num 0.1.27 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -212,7 +212,7 @@ version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "num 0.1.27 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
