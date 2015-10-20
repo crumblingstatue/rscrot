@@ -111,7 +111,7 @@ fn copy_to_clipboard(string: &str) -> Result<(), String> {
             None => return Err("Child had no stdin".into()),
         };
         if let Err(e) = stdin.write_all(string.as_bytes()) {
-            return Err(e.to_string())
+            return Err(e.to_string());
         }
     }
     match xclip.wait() {
@@ -132,7 +132,10 @@ fn main() {
 
     let mut opts = Options::new();
     opts.optflag("s", "select", "Let the user select the area to capture");
-    opts.optopt("", "imgur", "Allow uploading to imgur. Needs client id.", "CLIENT_ID");
+    opts.optopt("",
+                "imgur",
+                "Allow uploading to imgur. Needs client id.",
+                "CLIENT_ID");
     opts.optflag("h", "help", "print this help menu");
     let matches = match opts.parse(args) {
         Ok(m) => {
