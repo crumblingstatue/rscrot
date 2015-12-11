@@ -71,8 +71,10 @@ fn get_user_choice_from_menu(imgur: bool) -> Result<Choice, String> {
         b"Upload to imgur.com\n" => Ok(Choice::Upload),
         b"Save as...\n" => Ok(Choice::SaveAs(try!(get_save_filename_from_zenity()))),
         b"Open in feh\n" => Ok(Choice::OpenInFeh),
-        other => Err(format!("Zenity returned unknown result {:?}",
-                             String::from_utf8_lossy(other))),
+        other => {
+            Err(format!("Zenity returned unknown result {:?}",
+                        String::from_utf8_lossy(other)))
+        }
     }
 }
 
@@ -138,12 +140,8 @@ fn main() {
                 "CLIENT_ID");
     opts.optflag("h", "help", "print this help menu");
     let matches = match opts.parse(args) {
-        Ok(m) => {
-            m
-        }
-        Err(f) => {
-            panic!(f.to_string())
-        }
+        Ok(m) => m,
+        Err(f) => panic!(f.to_string()),
     };
     if matches.opt_present("h") {
         print_usage(&program, opts);
@@ -157,18 +155,21 @@ fn main() {
         Choice::Upload => {
             let notify = libnotify::Context::new("rscrot").unwrap();
             match upload_to_imgur(&file_path, client_id.unwrap()) {
-                Ok(info) => match info.link() {
-                    Some(url) => {
-                        copy_to_clipboard(url).unwrap();
-                        let body = format!("Uploaded to {}", url);
-                        let msg = notify.new_notification("Success:", Some(&body), None).unwrap();
-                        msg.show().unwrap();
+                Ok(info) => {
+                    match info.link() {
+                        Some(url) => {
+                            copy_to_clipboard(url).unwrap();
+                            let body = format!("Uploaded to {}", url);
+                            let msg = notify.new_notification("Success:", Some(&body), None)
+                                            .unwrap();
+                            msg.show().unwrap();
+                        }
+                        None => {
+                            let msg = notify.new_notification("Wtf, no link?", None, None).unwrap();
+                            msg.show().unwrap();
+                        }
                     }
-                    None => {
-                        let msg = notify.new_notification("Wtf, no link?", None, None).unwrap();
-                        msg.show().unwrap();
-                    }
-                },
+                }
                 Err(e) => {
                     let msg = notify.new_notification(&format!("Error: {}", e), None, None)
                                     .unwrap();
