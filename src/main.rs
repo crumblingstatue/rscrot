@@ -165,7 +165,8 @@ fn main() {
                             msg.show().unwrap();
                         }
                         None => {
-                            let msg = notify.new_notification("Wtf, no link?", None, None).unwrap();
+                            let msg = notify.new_notification("Wtf, no link?", None, None)
+                                            .unwrap();
                             msg.show().unwrap();
                         }
                     }
