@@ -33,7 +33,7 @@ fn save_screenshot(path: &Path, select: bool) -> Result<(), String> {
 enum Choice {
     Upload,
     SaveAs(PathBuf),
-    OpenInFeh,
+    OpenWith(String),
 }
 
 fn get_save_filename_from_zenity() -> Result<PathBuf, String> {
@@ -49,7 +49,7 @@ fn get_save_filename_from_zenity() -> Result<PathBuf, String> {
     Ok(PathBuf::from(&String::from_utf8(output.stdout).unwrap()))
 }
 
-fn get_user_choice_from_menu(imgur: bool) -> Result<Choice, String> {
+fn get_user_choice_from_menu(imgur: bool, viewer: Option<String>) -> Result<Choice, String> {
     let mut zenity = Command::new("zenity");
     zenity.arg("--list")
           .arg("--title")
@@ -59,7 +59,10 @@ fn get_user_choice_from_menu(imgur: bool) -> Result<Choice, String> {
     if imgur {
         zenity.arg("Upload to imgur.com");
     }
-    zenity.arg("Save as...").arg("Open in feh");
+    zenity.arg("Save as...");
+    if let Some(ref viewer) = viewer {
+        zenity.arg(&format!("Open with {}", viewer));
+    }
     let output = match zenity.output() {
         Ok(output) => output,
         Err(e) => return Err(e.to_string()),
@@ -70,8 +73,12 @@ fn get_user_choice_from_menu(imgur: bool) -> Result<Choice, String> {
     match &output.stdout[..] {
         b"Upload to imgur.com\n" => Ok(Choice::Upload),
         b"Save as...\n" => Ok(Choice::SaveAs(try!(get_save_filename_from_zenity()))),
-        b"Open in feh\n" => Ok(Choice::OpenInFeh),
         other => {
+            if let Some(viewer) = viewer {
+                if other == format!("Open with {}\n", viewer).as_bytes() {
+                    return Ok(Choice::OpenWith(viewer));
+                }
+            }
             Err(format!("Zenity returned unknown result {:?}",
                         String::from_utf8_lossy(other)))
         }
@@ -87,8 +94,8 @@ fn upload_to_imgur(path: &Path, client_id: String) -> Result<imgur::UploadInfo, 
     Ok(try!(handle.upload(&data)))
 }
 
-fn open_in_feh(path: &Path) -> Result<(), String> {
-    let mut cmd = Command::new("feh");
+fn open_with(viewer: String, path: &Path) -> Result<(), String> {
+    let mut cmd = Command::new(viewer);
     cmd.arg(path);
     match cmd.spawn() {
         Ok(_) => Ok(()),
@@ -138,6 +145,10 @@ fn main() {
                 "imgur",
                 "Allow uploading to imgur. Needs client id.",
                 "CLIENT_ID");
+    opts.optopt("",
+                "viewer",
+                "Allow viewing the image with an image viewer.",
+                "IMAGE_VIEWER");
     opts.optflag("h", "help", "print this help menu");
     let matches = match opts.parse(args) {
         Ok(m) => m,
@@ -148,10 +159,11 @@ fn main() {
         return;
     }
     let client_id = matches.opt_str("imgur");
+    let opt_viewer = matches.opt_str("viewer");
     let file_path = env::temp_dir().join("rscrot_screenshot.png");
     let select = matches.opt_present("s");
     save_screenshot(&file_path, select).unwrap();
-    match get_user_choice_from_menu(client_id.is_some()).unwrap() {
+    match get_user_choice_from_menu(client_id.is_some(), opt_viewer).unwrap() {
         Choice::Upload => {
             let notify = libnotify::Context::new("rscrot").unwrap();
             match upload_to_imgur(&file_path, client_id.unwrap()) {
@@ -182,6 +194,6 @@ fn main() {
             std::fs::copy(&file_path, path.to_str().unwrap().trim())
                 .unwrap_or_else(|e| panic!("{}", e));
         }
-        Choice::OpenInFeh => open_in_feh(&file_path).unwrap(),
+        Choice::OpenWith(viewer) => open_with(viewer, &file_path).unwrap(),
     }
 }
