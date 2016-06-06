@@ -9,6 +9,7 @@ use std::process::Command;
 use std::path::{Path, PathBuf};
 use std::error::Error;
 use std::fs::File;
+use std::time::{Instant, Duration};
 use clipboard::ClipboardContext;
 
 fn print_usage(program: &str, opts: Options) {
@@ -140,16 +141,26 @@ fn main() {
                 Ok(info) => {
                     match info.link() {
                         Some(url) => {
-                            let mut ctx = ClipboardContext::new().unwrap();
-                            ctx.set_contents(url.to_owned()).unwrap();
+                            // Copy url to clipboard
+                            {
+                                let mut ctx = ClipboardContext::new().unwrap();
+                                ctx.set_contents(url.to_owned()).unwrap();
+                            }
                             let body = format!("Uploaded to {}", url);
                             let msg = notify.new_notification("Success:", Some(&body), None)
                                 .unwrap();
                             msg.show().unwrap();
                             // X11 clipboard manegement sucks.
-                            // Wait 10 seconds either for user to paste link, or preferrably,
+                            // Wait for a while, either for user to paste link, or preferrably,
                             // the user's clipboard manager to pick the contents up.
-                            std::thread::sleep(std::time::Duration::from_secs(10));
+                            let wait_for = Duration::from_secs(20);
+                            let wait_start = Instant::now();
+
+                            while wait_start.elapsed() < wait_for {
+                                // Wait in a semi-busy state, since straight-up sleeping
+                                // doesn't seem to work? I don't know anymore.
+                                std::thread::sleep(std::time::Duration::from_millis(50));
+                            }
                         }
                         None => {
                             let msg = notify.new_notification("Wtf, no link?", None, None)
