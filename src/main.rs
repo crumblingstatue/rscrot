@@ -52,10 +52,10 @@ fn get_save_filename_from_zenity() -> Result<PathBuf, String> {
 fn get_user_choice_from_menu(imgur: bool, viewers: &[String]) -> Result<Choice, String> {
     let mut zenity = Command::new("zenity");
     zenity.arg("--list")
-          .arg("--title")
-          .arg("Choose Action")
-          .arg("--column")
-          .arg("Action");
+        .arg("--title")
+        .arg("Choose Action")
+        .arg("--column")
+        .arg("Action");
     if imgur {
         zenity.arg("Upload to imgur.com");
     }
@@ -107,10 +107,10 @@ fn copy_to_clipboard(string: &str) -> Result<(), String> {
     use std::io::Write;
 
     let mut xclip = match Command::new("xclip")
-                              .arg("-selection")
-                              .arg("clipboard")
-                              .stdin(Stdio::piped())
-                              .spawn() {
+        .arg("-selection")
+        .arg("clipboard")
+        .stdin(Stdio::piped())
+        .spawn() {
         Ok(child) => child,
         Err(e) => return Err(e.to_string()),
     };
@@ -173,19 +173,19 @@ fn main() {
                             copy_to_clipboard(url).unwrap();
                             let body = format!("Uploaded to {}", url);
                             let msg = notify.new_notification("Success:", Some(&body), None)
-                                            .unwrap();
+                                .unwrap();
                             msg.show().unwrap();
                         }
                         None => {
                             let msg = notify.new_notification("Wtf, no link?", None, None)
-                                            .unwrap();
+                                .unwrap();
                             msg.show().unwrap();
                         }
                     }
                 }
                 Err(e) => {
                     let msg = notify.new_notification(&format!("Error: {}", e), None, None)
-                                    .unwrap();
+                        .unwrap();
                     msg.show().unwrap();
                 }
             }
