@@ -1,15 +1,13 @@
 extern crate getopts;
 extern crate libnotify;
 extern crate imgur;
-extern crate clipboard;
 
 use getopts::Options;
 use std::env;
-use std::process::Command;
+use std::process::{Command, Stdio};
 use std::path::{Path, PathBuf};
 use std::error::Error;
 use std::fs::File;
-use clipboard::ClipboardContext;
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} [options]", program);
@@ -105,6 +103,38 @@ fn open_with(viewer: String, path: &Path) -> Result<(), String> {
     }
 }
 
+fn copy_to_clipboard(string: &str) -> Result<(), String> {
+    use std::io::Write;
+
+    let mut xclip = match Command::new("xclip")
+        .arg("-selection")
+        .arg("clipboard")
+        .stdin(Stdio::piped())
+        .spawn() {
+        Ok(child) => child,
+        Err(e) => return Err(e.to_string()),
+    };
+    {
+        let stdin = match xclip.stdin {
+            Some(ref mut stdin) => stdin,
+            None => return Err("Child had no stdin".into()),
+        };
+        if let Err(e) = stdin.write_all(string.as_bytes()) {
+            return Err(e.to_string());
+        }
+    }
+    match xclip.wait() {
+        Ok(status) => {
+            if !status.success() {
+                Err(format!("xclip failed. Exit status: {}", status))
+            } else {
+                Ok(())
+            }
+        }
+        Err(e) => Err(e.to_string()),
+    }
+}
+
 fn main() {
     let mut args = env::args();
     let program = args.next().unwrap();
@@ -140,16 +170,11 @@ fn main() {
                 Ok(info) => {
                     match info.link() {
                         Some(url) => {
-                            let mut ctx = ClipboardContext::new().unwrap();
-                            ctx.set_contents(url.to_owned()).unwrap();
+                            copy_to_clipboard(url).unwrap();
                             let body = format!("Uploaded to {}", url);
                             let msg = notify.new_notification("Success:", Some(&body), None)
                                 .unwrap();
                             msg.show().unwrap();
-                            // X11 clipboard manegement sucks.
-                            // Wait 10 seconds either for user to paste link, or preferrably,
-                            // the user's clipboard manager to pick the contents up.
-                            std::thread::sleep(std::time::Duration::from_secs(10));
                         }
                         None => {
                             let msg = notify.new_notification("Wtf, no link?", None, None)
