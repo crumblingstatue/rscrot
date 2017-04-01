@@ -6,5 +6,5 @@ authors = ["Mika Attila <radiantstatue@gmail.com>"]
 
 [dependencies]
 getopts = "0.2.14"
-libnotify = "0.3.0"
+notify-rust = "3.3.0"
 imgur = "0.6.0"

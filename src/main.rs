@@ -1,5 +1,5 @@
 extern crate getopts;
-extern crate libnotify;
+extern crate notify_rust;
 extern crate imgur;
 
 use getopts::Options;
@@ -107,10 +107,10 @@ fn copy_to_clipboard(string: &str) -> Result<(), String> {
     use std::io::Write;
 
     let mut xclip = match Command::new("xclip")
-        .arg("-selection")
-        .arg("clipboard")
-        .stdin(Stdio::piped())
-        .spawn() {
+              .arg("-selection")
+              .arg("clipboard")
+              .stdin(Stdio::piped())
+              .spawn() {
         Ok(child) => child,
         Err(e) => return Err(e.to_string()),
     };
@@ -165,34 +165,40 @@ fn main() {
     save_screenshot(&file_path, select).unwrap();
     match get_user_choice_from_menu(client_id.is_some(), &viewers).unwrap() {
         Choice::Upload => {
-            let notify = libnotify::Context::new("rscrot").unwrap();
+            use notify_rust::Notification;
             match upload_to_imgur(&file_path, client_id.unwrap()) {
                 Ok(info) => {
                     match info.link() {
                         Some(url) => {
                             copy_to_clipboard(url).unwrap();
                             let body = format!("Uploaded to {}", url);
-                            let msg = notify.new_notification("Success:", Some(&body), None)
+                            Notification::new()
+                                .summary("Success:")
+                                .body(&body)
+                                .show()
                                 .unwrap();
-                            msg.show().unwrap();
                         }
                         None => {
-                            let msg = notify.new_notification("Wtf, no link?", None, None)
+                            Notification::new()
+                                .summary("Wtf, no link?")
+                                .show()
                                 .unwrap();
-                            msg.show().unwrap();
                         }
                     }
                 }
                 Err(e) => {
-                    let msg = notify.new_notification(&format!("Error: {}", e), None, None)
+                    Notification::new()
+                        .summary(&format!("Error: {}", e))
+                        .show()
                         .unwrap();
-                    msg.show().unwrap();
                 }
             }
         }
         Choice::SaveAs(path) => {
-            std::fs::copy(&file_path, path.to_str().unwrap().trim())
-                .unwrap_or_else(|e| panic!("{}", e));
+            std::fs::copy(&file_path, path.to_str().unwrap().trim()).unwrap_or_else(|e| {
+                                                                                        panic!("{}",
+                                                                                               e)
+                                                                                    });
         }
         Choice::OpenWith(viewer) => open_with(viewer, &file_path).unwrap(),
     }
