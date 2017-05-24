@@ -72,7 +72,7 @@ fn get_user_choice_from_menu(imgur: bool, viewers: &[String]) -> Result<Choice, 
     }
     match &output.stdout[..] {
         b"Upload to imgur.com\n" => Ok(Choice::Upload),
-        b"Save as...\n" => Ok(Choice::SaveAs(try!(get_save_filename_from_zenity()))),
+        b"Save as...\n" => Ok(Choice::SaveAs(get_save_filename_from_zenity()?)),
         other => {
             for viewer in viewers {
                 if other == format!("Open with {}\n", viewer).as_bytes() {
@@ -87,11 +87,11 @@ fn get_user_choice_from_menu(imgur: bool, viewers: &[String]) -> Result<Choice, 
 
 fn upload_to_imgur(path: &Path, client_id: String) -> Result<imgur::UploadInfo, Box<Error>> {
     use std::io::Read;
-    let mut file = try!(File::open(path));
+    let mut file = File::open(path)?;
     let mut data = Vec::new();
-    try!(file.read_to_end(&mut data));
+    file.read_to_end(&mut data)?;
     let handle = imgur::Handle::new(client_id);
-    Ok(try!(handle.upload(&data)))
+    Ok(handle.upload(&data)?)
 }
 
 fn open_with(viewer: String, path: &Path) -> Result<(), String> {
