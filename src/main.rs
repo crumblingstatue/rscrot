@@ -51,7 +51,8 @@ fn get_save_filename_from_zenity() -> Result<PathBuf, String> {
 
 fn get_user_choice_from_menu(imgur: bool, viewers: &[String]) -> Result<Choice, String> {
     let mut zenity = Command::new("zenity");
-    zenity.arg("--list")
+    zenity
+        .arg("--list")
         .arg("--title")
         .arg("Choose Action")
         .arg("--column")
@@ -79,8 +80,12 @@ fn get_user_choice_from_menu(imgur: bool, viewers: &[String]) -> Result<Choice, 
                     return Ok(Choice::OpenWith(viewer.clone()));
                 }
             }
-            Err(format!("Zenity returned unknown result {:?}",
-                        String::from_utf8_lossy(other)))
+            Err(
+                format!(
+                    "Zenity returned unknown result {:?}",
+                    String::from_utf8_lossy(other)
+                ),
+            )
         }
     }
 }
@@ -141,14 +146,18 @@ fn main() {
 
     let mut opts = Options::new();
     opts.optflag("s", "select", "Let the user select the area to capture");
-    opts.optopt("",
-                "imgur",
-                "Allow uploading to imgur. Needs client id.",
-                "CLIENT_ID");
-    opts.optmulti("",
-                  "viewer",
-                  "Allow viewing the image with an image viewer.",
-                  "IMAGE_VIEWER");
+    opts.optopt(
+        "",
+        "imgur",
+        "Allow uploading to imgur. Needs client id.",
+        "CLIENT_ID",
+    );
+    opts.optmulti(
+        "",
+        "viewer",
+        "Allow viewing the image with an image viewer.",
+        "IMAGE_VIEWER",
+    );
     opts.optflag("h", "help", "print this help menu");
     let matches = match opts.parse(args) {
         Ok(m) => m,
@@ -163,7 +172,8 @@ fn main() {
     let file_path = env::temp_dir().join("rscrot_screenshot.png");
     let select = matches.opt_present("s");
     save_screenshot(&file_path, select).unwrap();
-    match get_user_choice_from_menu(client_id.is_some(), &viewers).unwrap() {
+    match get_user_choice_from_menu(client_id.is_some(), &viewers)
+              .unwrap() {
         Choice::Upload => {
             use notify_rust::Notification;
             match upload_to_imgur(&file_path, client_id.unwrap()) {
@@ -179,10 +189,7 @@ fn main() {
                                 .unwrap();
                         }
                         None => {
-                            Notification::new()
-                                .summary("Wtf, no link?")
-                                .show()
-                                .unwrap();
+                            Notification::new().summary("Wtf, no link?").show().unwrap();
                         }
                     }
                 }
@@ -195,10 +202,8 @@ fn main() {
             }
         }
         Choice::SaveAs(path) => {
-            std::fs::copy(&file_path, path.to_str().unwrap().trim()).unwrap_or_else(|e| {
-                                                                                        panic!("{}",
-                                                                                               e)
-                                                                                    });
+            std::fs::copy(&file_path, path.to_str().unwrap().trim())
+                .unwrap_or_else(|e| panic!("{}", e));
         }
         Choice::OpenWith(viewer) => open_with(viewer, &file_path).unwrap(),
     }
