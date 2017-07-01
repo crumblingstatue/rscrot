@@ -80,12 +80,10 @@ fn get_user_choice_from_menu(imgur: bool, viewers: &[String]) -> Result<Choice, 
                     return Ok(Choice::OpenWith(viewer.clone()));
                 }
             }
-            Err(
-                format!(
-                    "Zenity returned unknown result {:?}",
-                    String::from_utf8_lossy(other)
-                ),
-            )
+            Err(format!(
+                "Zenity returned unknown result {:?}",
+                String::from_utf8_lossy(other)
+            ))
         }
     }
 }
@@ -112,10 +110,10 @@ fn copy_to_clipboard(string: &str) -> Result<(), String> {
     use std::io::Write;
 
     let mut xclip = match Command::new("xclip")
-              .arg("-selection")
-              .arg("clipboard")
-              .stdin(Stdio::piped())
-              .spawn() {
+        .arg("-selection")
+        .arg("clipboard")
+        .stdin(Stdio::piped())
+        .spawn() {
         Ok(child) => child,
         Err(e) => return Err(e.to_string()),
     };
@@ -172,8 +170,7 @@ fn main() {
     let file_path = env::temp_dir().join("rscrot_screenshot.png");
     let select = matches.opt_present("s");
     save_screenshot(&file_path, select).unwrap();
-    match get_user_choice_from_menu(client_id.is_some(), &viewers)
-              .unwrap() {
+    match get_user_choice_from_menu(client_id.is_some(), &viewers).unwrap() {
         Choice::Upload => {
             use notify_rust::Notification;
             match upload_to_imgur(&file_path, client_id.unwrap()) {
