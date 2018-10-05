@@ -1,13 +1,13 @@
 extern crate getopts;
-extern crate notify_rust;
 extern crate imgur;
+extern crate notify_rust;
 
 use getopts::Options;
 use std::env;
-use std::process::{Command, Stdio};
-use std::path::{Path, PathBuf};
 use std::error::Error;
 use std::fs::File;
+use std::path::{Path, PathBuf};
+use std::process::{Command, Stdio};
 
 fn print_usage(program: &str, opts: &Options) {
     let brief = format!("Usage: {} [options]", program);
@@ -113,7 +113,8 @@ fn copy_to_clipboard(string: &str) -> Result<(), String> {
         .arg("-selection")
         .arg("clipboard")
         .stdin(Stdio::piped())
-        .spawn() {
+        .spawn()
+    {
         Ok(child) => child,
         Err(e) => return Err(e.to_string()),
     };
@@ -174,22 +175,20 @@ fn main() {
         Choice::Upload => {
             use notify_rust::Notification;
             match upload_to_imgur(&file_path, client_id.unwrap()) {
-                Ok(info) => {
-                    match info.link() {
-                        Some(url) => {
-                            copy_to_clipboard(url).unwrap();
-                            let body = format!("Uploaded to {}", url);
-                            Notification::new()
-                                .summary("Success:")
-                                .body(&body)
-                                .show()
-                                .unwrap();
-                        }
-                        None => {
-                            Notification::new().summary("Wtf, no link?").show().unwrap();
-                        }
+                Ok(info) => match info.link() {
+                    Some(url) => {
+                        copy_to_clipboard(url).unwrap();
+                        let body = format!("Uploaded to {}", url);
+                        Notification::new()
+                            .summary("Success:")
+                            .body(&body)
+                            .show()
+                            .unwrap();
                     }
-                }
+                    None => {
+                        Notification::new().summary("Wtf, no link?").show().unwrap();
+                    }
+                },
                 Err(e) => {
                     Notification::new()
                         .summary(&format!("Error: {}", e))
