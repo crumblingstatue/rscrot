@@ -34,6 +34,7 @@ enum Choice {
     Upload,
     SaveAs(PathBuf),
     OpenWith(String),
+    CopyToClipboard,
 }
 
 fn get_save_filename_from_zenity() -> Result<PathBuf, String> {
@@ -60,6 +61,7 @@ fn get_user_choice_from_menu(imgur: bool, viewers: &[String]) -> Result<Choice, 
     if imgur {
         zenity.arg("Upload to imgur.com");
     }
+    zenity.arg("Copy to clipboard");
     zenity.arg("Save as...");
     for viewer in viewers {
         zenity.arg(&format!("Open with {}", viewer));
@@ -74,6 +76,7 @@ fn get_user_choice_from_menu(imgur: bool, viewers: &[String]) -> Result<Choice, 
     match &output.stdout[..] {
         b"Upload to imgur.com\n" => Ok(Choice::Upload),
         b"Save as...\n" => Ok(Choice::SaveAs(get_save_filename_from_zenity()?)),
+        b"Copy to clipboard\n" => Ok(Choice::CopyToClipboard),
         other => {
             for viewer in viewers {
                 if other == format!("Open with {}\n", viewer).as_bytes() {
@@ -106,12 +109,14 @@ fn open_with(viewer: String, path: &Path) -> Result<(), String> {
     }
 }
 
-fn copy_to_clipboard(string: &str) -> Result<(), String> {
+fn copy_to_clipboard(data: &[u8], target: &str) -> Result<(), String> {
     use std::io::Write;
 
     let mut xclip = match Command::new("xclip")
         .arg("-selection")
         .arg("clipboard")
+        .arg("-target")
+        .arg(target)
         .stdin(Stdio::piped())
         .spawn()
     {
@@ -123,7 +128,7 @@ fn copy_to_clipboard(string: &str) -> Result<(), String> {
             Some(ref mut stdin) => stdin,
             None => return Err("Child had no stdin".into()),
         };
-        if let Err(e) = stdin.write_all(string.as_bytes()) {
+        if let Err(e) = stdin.write_all(data) {
             return Err(e.to_string());
         }
     }
@@ -177,7 +182,7 @@ fn main() {
             match upload_to_imgur(&file_path, client_id.unwrap()) {
                 Ok(info) => match info.link() {
                     Some(url) => {
-                        copy_to_clipboard(url).unwrap();
+                        copy_to_clipboard(url.as_bytes(), "text/plain").unwrap();
                         let body = format!("Uploaded to {}", url);
                         Notification::new()
                             .summary("Success:")
@@ -202,5 +207,9 @@ fn main() {
                 .unwrap_or_else(|e| panic!("{}", e));
         }
         Choice::OpenWith(viewer) => open_with(viewer, &file_path).unwrap(),
+        Choice::CopyToClipboard => {
+            let image = std::fs::read(file_path).unwrap();
+            copy_to_clipboard(&image, "image/png").unwrap();
+        }
     }
 }
