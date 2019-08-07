@@ -15,17 +15,17 @@ fn print_usage(program: &str, opts: &Options) {
 }
 
 fn save_screenshot(path: &Path, select: bool) -> Result<(), String> {
-    let mut scrot = Command::new("scrot");
+    let mut maim = Command::new("maim");
     if select {
-        scrot.arg("-s");
+        maim.arg("-s");
     }
-    scrot.arg(path);
-    let status = match scrot.status() {
+    maim.arg(path);
+    let status = match maim.status() {
         Ok(status) => status,
         Err(e) => return Err(e.to_string()),
     };
     if !status.success() {
-        return Err(format!("scrot failed. Exit status: {}", status));
+        return Err(format!("maim failed. Exit status: {}", status));
     }
     Ok(())
 }
