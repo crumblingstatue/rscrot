@@ -88,7 +88,7 @@ fn get_user_choice_from_menu(imgur: bool, viewers: &[String]) -> Result<Choice, 
     }
 }
 
-fn upload_to_imgur(path: &Path, client_id: String) -> Result<imgur::UploadInfo, Box<Error>> {
+fn upload_to_imgur(path: &Path, client_id: String) -> Result<imgur::UploadInfo, Box<dyn Error>> {
     use std::io::Read;
     let mut file = File::open(path)?;
     let mut data = Vec::new();
