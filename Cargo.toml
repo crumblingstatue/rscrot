@@ -5,6 +5,6 @@ version = "0.0.1"
 authors = ["Mika Attila <radiantstatue@gmail.com>"]
 
 [dependencies]
-getopts = "0.2.14"
-notify-rust = "3.3.0"
+getopts = "0.2.21"
+notify-rust = "4.5.2"
 imgur = "0.7.0"
