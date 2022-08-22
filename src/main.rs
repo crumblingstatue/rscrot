@@ -1,7 +1,3 @@
-extern crate getopts;
-extern crate imgur;
-extern crate notify_rust;
-
 use getopts::Options;
 use std::env;
 use std::error::Error;
