@@ -1,7 +1,5 @@
 use getopts::Options;
 use std::env;
-use std::error::Error;
-use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
@@ -27,7 +25,6 @@ fn save_screenshot(path: &Path, select: bool) -> Result<(), String> {
 }
 
 enum Choice {
-    Upload,
     SaveAs(PathBuf),
     OpenWith(String),
     CopyToClipboard,
@@ -46,7 +43,7 @@ fn get_save_filename_from_zenity() -> Result<PathBuf, String> {
     Ok(PathBuf::from(&String::from_utf8(output.stdout).unwrap()))
 }
 
-fn get_user_choice_from_menu(imgur: bool, viewers: &[String]) -> Result<Choice, String> {
+fn get_user_choice_from_menu(viewers: &[String]) -> Result<Choice, String> {
     let mut zenity = Command::new("zenity");
     zenity
         .arg("--list")
@@ -54,9 +51,6 @@ fn get_user_choice_from_menu(imgur: bool, viewers: &[String]) -> Result<Choice, 
         .arg("Choose Action")
         .arg("--column")
         .arg("Action");
-    if imgur {
-        zenity.arg("Upload to imgur.com");
-    }
     zenity.arg("Copy to clipboard");
     zenity.arg("Save as...");
     for viewer in viewers {
@@ -70,7 +64,6 @@ fn get_user_choice_from_menu(imgur: bool, viewers: &[String]) -> Result<Choice, 
         return Err(format!("zenity failed. Exit status: {}", output.status));
     }
     match &output.stdout[..] {
-        b"Upload to imgur.com\n" => Ok(Choice::Upload),
         b"Save as...\n" => Ok(Choice::SaveAs(get_save_filename_from_zenity()?)),
         b"Copy to clipboard\n" => Ok(Choice::CopyToClipboard),
         other => {
@@ -85,15 +78,6 @@ fn get_user_choice_from_menu(imgur: bool, viewers: &[String]) -> Result<Choice, 
             ))
         }
     }
-}
-
-fn upload_to_imgur(path: &Path, client_id: String) -> Result<imgur::UploadInfo, Box<dyn Error>> {
-    use std::io::Read;
-    let mut file = File::open(path)?;
-    let mut data = Vec::new();
-    file.read_to_end(&mut data)?;
-    let handle = imgur::Handle::new(client_id);
-    Ok(handle.upload(&data)?)
 }
 
 fn open_with(viewer: String, path: &Path) -> Result<(), String> {
@@ -146,12 +130,6 @@ fn main() {
 
     let mut opts = Options::new();
     opts.optflag("s", "select", "Let the user select the area to capture");
-    opts.optopt(
-        "",
-        "imgur",
-        "Allow uploading to imgur. Needs client id.",
-        "CLIENT_ID",
-    );
     opts.optmulti(
         "",
         "viewer",
@@ -167,37 +145,11 @@ fn main() {
         print_usage(&program, &opts);
         return;
     }
-    let client_id = matches.opt_str("imgur");
     let viewers = matches.opt_strs("viewer");
     let file_path = env::temp_dir().join("rscrot_screenshot.png");
     let select = matches.opt_present("s");
     save_screenshot(&file_path, select).unwrap();
-    match get_user_choice_from_menu(client_id.is_some(), &viewers).unwrap() {
-        Choice::Upload => {
-            use notify_rust::Notification;
-            match upload_to_imgur(&file_path, client_id.unwrap()) {
-                Ok(info) => match info.link() {
-                    Some(url) => {
-                        copy_to_clipboard(url.as_bytes(), "text/plain").unwrap();
-                        let body = format!("Uploaded to {}", url);
-                        Notification::new()
-                            .summary("Success:")
-                            .body(&body)
-                            .show()
-                            .unwrap();
-                    }
-                    None => {
-                        Notification::new().summary("Wtf, no link?").show().unwrap();
-                    }
-                },
-                Err(e) => {
-                    Notification::new()
-                        .summary(&format!("Error: {}", e))
-                        .show()
-                        .unwrap();
-                }
-            }
-        }
+    match get_user_choice_from_menu(&viewers).unwrap() {
         Choice::SaveAs(path) => {
             std::fs::copy(&file_path, path.to_str().unwrap().trim())
                 .unwrap_or_else(|e| panic!("{}", e));
