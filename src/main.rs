@@ -136,6 +136,12 @@ fn main() {
         "Allow viewing the image with an image viewer.",
         "IMAGE_VIEWER",
     );
+    opts.optopt(
+        "t",
+        "timer",
+        "Sleep n seconds before taking the screenshot",
+        "SECONDS",
+    );
     opts.optflag("h", "help", "print this help menu");
     let matches = match opts.parse(args) {
         Ok(m) => m,
@@ -148,6 +154,12 @@ fn main() {
     let viewers = matches.opt_strs("viewer");
     let file_path = env::temp_dir().join("rscrot_screenshot.png");
     let select = matches.opt_present("s");
+    if let Some(sleep_timer) = matches.opt_str("timer") {
+        let seconds = sleep_timer
+            .parse()
+            .expect("Timer value needs to be numeric");
+        std::thread::sleep(std::time::Duration::from_secs(seconds));
+    }
     save_screenshot(&file_path, select).unwrap();
     match get_user_choice_from_menu(&viewers).unwrap() {
         Choice::SaveAs(path) => {
